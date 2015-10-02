@@ -1,0 +1,42 @@
+bundle agent sshd_conf
+{
+meta:
+    "tags"	slist 		=>
+				{
+				"autorun"
+				};
+
+vars:
+    "sshd_packages"
+		slist		=>
+				{
+				"openssh-server",
+				"openssh-sftp-server",
+				"openssh-client",
+				};
+packages:
+    debian::
+    "$(sshd_packages)"
+	package_policy		=>	"add",
+	package_method		=>	generic,
+	classes			=>	if_ok("sshd_installed");
+#	action			=>	if_elapsed("5");
+
+files:
+    sshd_installed|debian::
+    "/etc/ssh/sshd_config"
+	create			=>	'true',
+	edit_defaults		=>	empty,
+	edit_template		=>	"${sys.workdir}/inputs/templates/sshd.conf.template",
+	classes			=>	if_ok("sshd_configured");
+
+commands:
+    sshd_configured::
+    "/etc/init.d/ssh restart"
+    comment			=> 	"Restarting SSHd";
+
+
+reports:
+    verbose_mode::
+    "$(this.bundle): SSHd Hardening";
+}
