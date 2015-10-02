@@ -23,7 +23,7 @@ packages:
 #	action			=>	if_elapsed("5");
 
 files:
-    sshd_installed|debian::
+    sshd_installed.debian::
     "/etc/ssh/sshd_config"
 	create			=>	'true',
 	edit_defaults		=>	empty,
